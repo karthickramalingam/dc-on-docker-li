@@ -1,4 +1,4 @@
-FROM joeneville/ops:latest
+FROM karthickramalingam/openswitch:latest
 
 MAINTAINER Kei Nohguchi <kei@nohguchi.com>
 

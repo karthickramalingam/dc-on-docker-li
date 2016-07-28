@@ -1,5 +1,9 @@
 version: '2'
 services:
+  build_switch:
+    build: .
+    image: openswitch/local_build
+    command: /bin/true
   fab05:
     image: openswitch/local_build
     container_name: "fab05"

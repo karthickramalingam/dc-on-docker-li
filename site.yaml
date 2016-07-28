@@ -4,7 +4,7 @@
   gather_facts: no
   vars:
     ops_debug: no
-    expected: 0.4.0
+    expected: 0.3.0
   tasks:
     - include: tasks/cli/check_version.yaml
       tags: [ base, check, cli ]
