@@ -25,7 +25,7 @@
       pip: name=docker-compose state=present
     - name: build switch and server docker image through utils/*/Dockerfile
       become: yes
-      command: docker-compose build
+      command: docker-compose  -f docker-compose-fab.yaml build
     - name: run fab and host containers
       command: docker-compose -f docker-compose-fab.yaml up -d
     - name: wait for 10 sec
