@@ -1,0 +1,35 @@
+---
+ops_vrfs:
+  - name: vrf_default
+    ports: [1, 2, 3, 4, 5, 6]
+    bgp_routers:
+      - as_number: 64850
+        router_id: 10.0.20.3
+        networks: [10.0.20.2/31, 10.0.20.34/31, 10.0.20.66/31, 10.0.20.98/31, 10.0.5.0/31, 10.0.5.2/31]
+        neighbors:
+          - address: 10.0.20.2
+            remote_as: 64700
+          - address: 10.0.20.34
+            remote_as: 64700
+          - address: 10.0.20.66
+            remote_as: 64700
+          - address: 10.0.20.98
+            remote_as: 64700
+          - address: 10.0.5.1
+            remote_as: 64900
+          - address: 10.0.5.3
+            remote_as: 64901
+
+ops_ports:
+  - name: 1
+    ipv4_address: 10.0.20.3/31
+  - name: 2
+    ipv4_address: 10.0.20.35/31
+  - name: 3
+    ipv4_address: 10.0.20.67/31
+  - name: 4
+    ipv4_address: 10.0.20.99/31
+  - name: 5
+    ipv4_address: 10.0.5.0/31
+  - name: 6
+    ipv4_address: 10.0.5.2/31

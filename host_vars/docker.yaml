@@ -1,0 +1,19 @@
+---
+# Your ssh public key file name to be used for the switch
+# ssh authentication.
+your_public_key: id_rsa.pub
+
+# Docker compose file for DC topology.
+docker_compose_file: docker-compose.yaml
+
+# Docker network shell script for DC topology.
+docker_network_script: docker-network.sh
+docker_network_script_host: docker-network-host.sh
+
+# Docker server file for server images
+docker_server_file: server/Dockerfile
+
+# Temporary file to indicate the docker network setting.
+docker_network_done_file: /tmp/docker_network.done
+docker_network_done_file_host: /tmp/docker_network_host.done
+

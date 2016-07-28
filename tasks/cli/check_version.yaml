@@ -1,0 +1,16 @@
+---
+- name: check the switch version by CLI
+  connection: local
+  ops_command:
+    provider: "{{ ops_cli_provider }}"
+    commands:
+      - show version
+    waitfor:
+      - "result[0] contains {{ expected }}"
+    interval: 3
+    retries: 2
+  register: result
+
+- name: print the CLI output
+  debug: var=result
+  when: ops_debug

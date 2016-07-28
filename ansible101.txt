@@ -1,0 +1,167 @@
+Ansible
+   101
+
+Kei
+
+Nohguchi
+
+What?
+
+Automation
+
+Deployment
+
+Provisioning
+
+and
+
+Orchestration
+
+ Inventory,
+ Variables
+        &
+Playbooks
+
+Inventory
+     aka
+   hosts
+
+hosts
+
+$ cat hosts
+...
+[all]
+docker
+fab1 ansible_port=10022 ops_rest_port=10443
+ 
+[switches:children]
+fabrics
+ 
+[fabrics]
+fab1
+...
+
+    Variables
+1) group_vars
+2) host_vars
+
+group_vars
+
+$ cat group_vars/switches.yaml
+---
+\# We'll use the admin account to access OpenSwitch switches.
+ansible_user: admin
+  
+\# Those will be secured by the ansible vault in the real environment.
+ops_username: netop
+ops_password: netop
+  
+\# ops_command provider for CLI transport.
+ops_cli_provider:
+  transport: cli
+  username: "{{ ops_username }}"
+  password: "{{ ops_password }}"
+  host: "{{ ansible_host }}"
+  port: "{{ ansible_port }}"
+...
+
+host_vars
+
+$ cat host_vars/fab1.yaml
+---
+ops_vrfs:
+  - name: vrf_default
+    ports: [1, 2, 3]
+    bgp_routers:
+      - as_number: 65000
+        router_id: 172.16.0.1
+        networks: [172.16.0.0/24, 172.16.1.0/24, 172.16.2.0/24]
+        neighbors:
+          - address: 172.16.1.2
+            remote_as: 65001
+          - address: 172.16.2.2
+            remote_as: 65002
+...
+
+Playbooks
+ 1) Tasks
+ 2) Plays
+
+Task
+
+$ cat tasks/rest/check_full_config_yaml
+- name: check hostname by full-config REST API
+  connection: local
+  ops_facts:
+    provider: "{{ ops_rest_provider }}"
+    endpoints:
+      - /system/full-configuration
+  
+  register: result
+  failed_when: "'{{ expected }}' != endpoints[0].System.hostname"
+...
+
+Play
+
+$ cat site.yaml
+...
+- name: check the switch configuration
+  hosts: switches
+  gather_facts: no
+   
+  vars:
+    ops_debug: yes
+    expected: '{{ ops_system_hostname }}'
+   
+  tasks:
+    - include: tasks/cli/check_running_config.yaml
+      tags: [ base, check, cli ]
+    - include: tasks/rest/check_full_config.yaml
+      tags: [ base, check, rest ]
+...
+
+Playbooks
+
+$ cat site.yaml
+...
+- name: check the switch configuration
+  hosts: switches
+  gather_facts: no
+  vars:
+    ops_debug: yes
+    expected: '{{ ops_system_hostname }}'
+   
+  tasks:
+    - include: tasks/cli/check_running_config.yaml
+      tags: [ base, check, cli ]
+    - include: tasks/rest/check_full_config.yaml
+      tags: [ base, check, rest ]
+   
+- include: bgp.yaml
+  tags: [ bgp ]
+   
+- include: server.yaml
+  tags: [ server ]
+
+includes
+
+$ cat server.yaml
+---
+- name: make all traffic to 172.16.0.0/16 through eth1
+  hosts: servers
+  gather_facts: yes
+  tasks:
+    - name: add 172.16.0.0/16 through eth1
+      tags: [ server, config ]
+      become: yes
+      command: ip route add 172.16.0.0/16 dev eth1
+
+$ git clone https://github.com/keinohguchi/dc-on-docker --recursive
+
+$ irssi -c chat.freenode.net
+[(status)] /join #openswitch
+[#openswitch] /me is here!
+[#openswitch] /msg kei hello!
+
+   Muchas
+Gracious! :)

@@ -1,0 +1,152 @@
+---
+# Following the sample role CI
+# https://github.com/geerlingguy/ansible-role-apache/blob/master/.travis.yml
+
+sudo: required
+dist: trusty
+
+# https://docs.travis-ci.com/user/environment-variables/
+#
+# We don't have a full featured matrix support in travis:
+# https://github.com/travis-ci/travis-ci/issues/1519
+env:
+  global:
+    compose_version: 1.6.0
+    docker_version: 1.10.1-0~trusty
+    network_script: docker-network1.sh
+    compose_file: docker-compose1.yaml
+    compose_url: https://github.com/docker/compose/releases/download/
+    role_under_test: switch
+    build_path: tests
+    dut_host: fab1
+    dut_port: 22
+    dut_rest_port: 443
+    # Ubuntu/14.04 is the default ansible control machine distribution
+    distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+  matrix:
+    # Basic sanity check on both on Ubuntu14.04 and CentOS7 machines.
+    - test_pathname: tests/test_version.yml
+    - test_pathname: tests/test_version.yml
+      distribution: centos
+      version: 7
+      init: /usr/lib/systemd/systemd
+      docker_ops_privileged: '--privileged'
+      docker_ops_volume1: '--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    - test_pathname: tests/test_hostname.yml
+    - test_pathname: tests/test_hostname.yml
+      distribution: centos
+      version: 7
+      init: /usr/lib/systemd/systemd
+      docker_ops_privileged: '--privileged'
+      docker_ops_volume1: '--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    # We only use the ubuntu as the control machine
+    # rest of the tests.
+    - test_pathname: tests/test_bridge.yml
+    - test_pathname: tests/test_bridge_vlan.yml
+    - test_pathname: tests/test_switch.yml
+
+services:
+  - docker
+
+before_install:
+  # list docker-engine versions
+  - apt-cache madison docker-engine
+
+install:
+  # upgrade docker-engine to specific version
+  - >
+    sudo apt-get -o Dpkg::Options::='--force-confnew'
+    install -y docker-engine=${docker_version}
+
+  # reinstall docker-compose at specific version
+  - sudo rm /usr/local/bin/docker-compose
+  - >
+    curl -L
+    ${compose_url}/${compose_version}/docker-compose-`uname -s`-`uname -m`
+    > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+before_script:
+  # Build OpenSwitch image by docker-compose
+  - >
+    sudo bash -c
+    "cd ${build_path} && docker-compose --file=${compose_file} build"
+
+  # Run OpenSwitch instances through docker-compose
+  - >
+    sudo bash -c
+    "cd ${build_path} && docker-compose --file=${compose_file} up -d"
+
+  # Run the docker-network script to create data port network
+  - sudo bash ${build_path}/${network_script}
+
+  # Build ansible control machine container
+  - sudo docker pull ${distribution}:${version}
+  - >
+    sudo docker build --rm=true
+    --file=${build_path}/Dockerfile.${distribution}-${version}
+    --tag=${distribution}-${version}:local ${build_path}
+
+  # Run ansible control machine, linked to containers
+  - ansible_id=$(mktemp)
+  - >
+    sudo docker run --net=${build_path}_default --detach
+    --volume=${PWD}:/etc/ansible/roles/${role_under_test}:rw ${run_ops}
+    --link fab1:${dut_host} --link server1:server1 --link server2:server2
+    ${distribution}-${version}:local ${init} > ${ansible_id}
+
+  # Print the current working directory on ansible control machine
+  - sudo docker exec --tty $(cat ${ansible_id}) env TERM=xterm pwd
+
+script:
+  # Ansible syntax check
+  - >
+    sudo docker exec --tty $(cat ${ansible_id})
+    env TERM=xterm
+    ANSIBLE_CONFIG=/etc/ansible/roles/${role_under_test}/tests/ansible.cfg
+    ansible-playbook roles/${role_under_test}/${test_pathname}
+    ${ansible_ops_debug} ${ansible_ops_limit} ${ansible_ops_skip_tags}
+    --extra-vars "ansible_host=${dut_host} ansible_port=${dut_port}"
+    --extra-vars "ops_rest_port=${dut_rest_port}"
+    --syntax-check
+
+  # Run the test
+  - >
+    sudo docker exec --tty $(cat ${ansible_id})
+    env TERM=xterm
+    ANSIBLE_CONFIG=/etc/ansible/roles/${role_under_test}/tests/ansible.cfg
+    ansible-playbook roles/${role_under_test}/${test_pathname}
+    ${ansible_ops_debug} ${ansible_ops_limit} ${ansible_ops_skip_tags}
+    --extra-vars "ansible_host=${dut_host} ansible_port=${dut_port}"
+    --extra-vars "ops_rest_port=${dut_rest_port}"
+
+  # Run again to check the idempotent
+  - >
+    sudo docker exec --tty $(cat ${ansible_id})
+    env TERM=xterm
+    ANSIBLE_CONFIG=/etc/ansible/roles/${role_under_test}/tests/ansible.cfg
+    ansible-playbook roles/${role_under_test}/${test_pathname}
+    ${ansible_ops_debug} ${ansible_ops_limit} ${ansible_ops_skip_tags}
+    --extra-vars "ansible_host=${dut_host} ansible_port=${dut_port}"
+    --extra-vars "ops_rest_port=${dut_rest_port}"
+
+after_script:
+  # Check if we're sharing the same docker host
+  - sudo docker network ls
+  - sudo docker images
+  - sudo docker ps -a
+
+  # docker clenaup
+  - sudo docker stop $(cat ${ansible_id})
+  - >
+    sudo bash -c
+    "cd ${build_path} && docker-compose --file=${compose_file} down"
+
+notifications:
+  webhooks:
+    - https://galaxy.ansible.com/api/v1/notifications/
+    # trigger Buildtime Trend Service to parse Travis CI log
+    - https://buildtimetrend.herokuapp.com/travis

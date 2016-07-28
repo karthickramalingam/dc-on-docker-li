@@ -1,0 +1,252 @@
+version: '2'
+services:
+  build_switch:
+    build: .
+    image: openswitch/local_build
+    command: /bin/true
+  build_server:
+    build: ./server
+    image: server/local_build
+    command: /bin/true
+  fab1:
+    image: openswitch/local_build
+    container_name: "fab1"
+    privileged: true
+    ports:
+      - "11022:22"
+      - "11443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab2:
+    image: openswitch/local_build
+    container_name: "fab2"
+    privileged: true
+    ports:
+      - "12022:22"
+      - "12443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab3:
+    image: openswitch/local_build
+    container_name: "fab3"
+    privileged: true
+    ports:
+      - "13022:22"
+      - "13443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab4:
+    image: openswitch/local_build
+    container_name: "fab4"
+    privileged: true
+    ports:
+      - "14022:22"
+      - "14443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine1:
+    image: openswitch/local_build
+    container_name: "spine1"
+    privileged: true
+    ports:
+      - "21022:22"
+      - "21443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine2:
+    image: openswitch/local_build
+    container_name: "spine2"
+    privileged: true
+    ports:
+      - "22022:22"
+      - "22443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine3:
+    image: openswitch/local_build
+    container_name: "spine3"
+    privileged: true
+    ports:
+      - "23022:22"
+      - "23443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine4:
+    image: openswitch/local_build
+    container_name: "spine4"
+    privileged: true
+    ports:
+      - "24022:22"
+      - "24443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine5:
+    image: openswitch/local_build
+    container_name: "spine5"
+    privileged: true
+    ports:
+      - "25022:22"
+      - "25443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine6:
+    image: openswitch/local_build
+    container_name: "spine6"
+    privileged: true
+    ports:
+      - "26022:22"
+      - "26443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine7:
+    image: openswitch/local_build
+    container_name: "spine7"
+    privileged: true
+    ports:
+      - "27022:22"
+      - "27443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine8:
+    image: openswitch/local_build
+    container_name: "spine8"
+    privileged: true
+    ports:
+      - "28022:22"
+      - "28443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  leaf1:
+    image: openswitch/local_build
+    container_name: "leaf1"
+    privileged: true
+    ports:
+      - "31022:22"
+      - "31443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  leaf2:
+    image: openswitch/local_build
+    container_name: "leaf2"
+    privileged: true
+    ports:
+      - "32022:22"
+      - "32443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  leaf3:
+    image: openswitch/local_build
+    container_name: "leaf3"
+    privileged: true
+    ports:
+      - "33022:22"
+      - "33443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  leaf4:
+    image: openswitch/local_build
+    container_name: "leaf4"
+    privileged: true
+    ports:
+      - "34022:22"
+      - "34443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  server1:
+    image: server/local_build
+    container_name: "server1"
+    privileged: true
+    ports:
+      - "41022:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server2:
+    image: server/local_build
+    container_name: "server2"
+    privileged: true
+    ports:
+      - "42022:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D

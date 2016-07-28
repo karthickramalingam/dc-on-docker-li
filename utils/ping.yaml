@@ -1,0 +1,36 @@
+---
+- name: check fabric switch health
+  hosts: fabrics
+  gather_facts: no
+  vars:
+    ansible_user: root
+  tasks:
+    - name: check fabric switches' SSH connectivity
+      ping:
+
+- name: check spine switch health
+  hosts: spines
+  gather_facts: no
+  vars:
+    ansible_user: root
+  tasks:
+    - name: check spine switches' SSH connectivity
+      ping:
+
+- name: check leaf switch health
+  hosts: leaves
+  gather_facts: no
+  vars:
+    ansible_user: root
+  tasks:
+    - name: check leaf switches' SSH connectivity
+      ping:
+
+# name: check server health
+# hosts: servers
+# gather_facts: no
+# vars:
+#   ansible_user: admin
+# tasks:
+#   - name: check servers' SSH connectivity
+#     ping:

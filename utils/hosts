@@ -1,0 +1,58 @@
+[all:vars]
+ansible_host=dockerhost
+ansible_user=openswitch
+
+[all]
+docker
+fab05    ansible_port=11022 ops_rest_port=11443
+fab06    ansible_port=12022 ops_rest_port=12443
+fab07    ansible_port=13022 ops_rest_port=13443
+fab08    ansible_port=14022 ops_rest_port=14443
+csw01    ansible_port=21022 ops_rest_port=21443
+csw02    ansible_port=22022 ops_rest_port=22443
+csw03    ansible_port=23022 ops_rest_port=23443
+csw04    ansible_port=24022 ops_rest_port=24443
+csw05    ansible_port=25022 ops_rest_port=25443
+csw06    ansible_port=26022 ops_rest_port=26443
+csw07    ansible_port=27022 ops_rest_port=27443
+csw08    ansible_port=28022 ops_rest_port=28443
+asw01    ansible_port=31022 ops_rest_port=31443
+asw02    ansible_port=32022 ops_rest_port=32443
+asw03    ansible_port=33022 ops_rest_port=33443
+asw04    ansible_port=34022 ops_rest_port=34443
+host1  ansible_port=41022
+host2  ansible_port=42022
+
+[switches:children]
+fabrics
+spines
+leaves
+
+[fabrics]
+fab05
+fab06
+fab07
+fab08
+
+[spines]
+csw0[1:8]
+
+[leaves]
+asw0[1:4]
+
+[servers:children]
+fabric_servers
+leaf_servers
+
+[fabric_servers]
+host1
+
+[leaf_servers]
+host2
+
+# Group for the tests/*.yml playbooks used by both travis CI.
+# You can use the local fab1 switch to run the test as:
+#
+# $ ansible-playbook tests/test_bridge.yml
+[switches@travis:children]
+fabrics

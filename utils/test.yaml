@@ -1,0 +1,8 @@
+- name: setup docker host
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: setup network by test.sh
+      script: >
+        "{{ docker_network_script }}" 
+

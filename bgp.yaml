@@ -1,0 +1,65 @@
+---
+- name: BGP configuration on fabric switches
+  hosts: fabrics
+  gather_facts: no
+  vars:
+    ops_debug: no
+  roles:
+    - { role: bgp, tags: [ bgp, config, dc ] }
+
+- name: BGP configuration on spine switches
+  hosts: spines
+  gather_facts: no
+  vars:
+    ops_debug: no
+  roles:
+    - { role: bgp, tags: [ bgp, config, dc ] }
+
+- name: BGP configuration on leaf switches
+  hosts: leaves
+  gather_facts: no
+  vars:
+    ops_debug: no
+  roles:
+    - { role: bgp, tags: [ bgp, config, dc ] }
+
+- name: check the switch configuration
+  hosts: switches
+  gather_facts: no
+  vars:
+    ops_debug: yes
+    expected: '{{ ops_system_hostname }}'
+  tasks:
+    - include: tasks/cli/check_running_config.yaml
+      tags: [ bgp, check, cli ]
+    - include: tasks/rest/check_full_config.yaml
+      tags: [ bgp, check, rest ]
+
+- name: wait for BGP peering up
+  hosts: switches
+  gather_facts: no
+  tasks:
+    - pause: seconds=90
+
+- name: check the BGP peering
+  hosts: switches
+  gather_facts: no
+  vars:
+    ops_debug: no
+  tasks:
+    - name: show ip bgp neighbors
+      tags: [ bgp, check, cli ]
+      connection: local
+      ops_command:
+        commands:
+          - show ip bgp neighbors
+        provider: "{{ ops_cli_provider }}"
+        waitfor:
+          - "result[0] contains 'state: Established'"
+        interval: 3
+        retries: 3
+      register: result
+
+    - name: print out the result
+      tags: [ bgp, check, cli ]
+      debug: var=result

@@ -1,0 +1,16 @@
+---
+- name: check hostname by show running-config CLI
+  connection: local
+  ops_command:
+    provider: "{{ ops_cli_provider }}"
+    commands:
+      - show running-config
+    waitfor:
+      - "result[0] contains 'hostname {{ expected }}'"
+    interval: 5
+    retries: 3
+  register: result
+
+- name: print the CLI output
+  debug: var=result
+  when: ops_debug

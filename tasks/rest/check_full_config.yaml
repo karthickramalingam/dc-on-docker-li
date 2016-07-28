@@ -1,0 +1,13 @@
+---
+- name: check hostname by full-config REST API
+  connection: local
+  ops_facts:
+    provider: "{{ ops_rest_provider }}"
+    endpoints:
+      - /system/full-configuration
+  register: result
+  failed_when: "'{{ expected }}' != endpoints[0].System.hostname"
+
+- name: print the REST output
+  debug: var=result
+  when: ops_debug

@@ -1,0 +1,13 @@
+---
+- name: check the switch version by REST API
+  connection: local
+  ops_facts:
+    provider: "{{ ops_rest_provider }}"
+    endpoints:
+      - /system
+  register: result
+  failed_when: "'{{ expected }}' not in endpoints[0].status.switch_version"
+
+- name: print the REST output
+  debug: var=result
+  when: ops_debug

@@ -1,0 +1,93 @@
+---
+- name: provision ubuntu based vagrant guest as the Ansible control machine
+  hosts: default
+  gather_facts: yes
+  vars:
+    docker_version: 1.10.1-0~trusty
+    ansible_build_dir: /tmp/ansible
+    ansible_branch: stable-2.1
+
+  tasks:
+    - name: generate ssh key
+      user: name=vagrant generate_ssh_key=yes
+
+    - name: check if public key in authrized_keys
+      command: >
+        grep "ansible-generated on" ~/.ssh/authorized_keys
+      changed_when: false
+      ignore_errors: yes
+      register: result
+
+    - name: append public key if it is not there
+      shell: cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+      when: result.rc != 0
+
+    - name: add apt docker repository
+      become: yes
+      apt_repository: >
+        repo='deb https://apt.dockerproject.org/repo ubuntu-trusty main'
+        state=present update_cache=yes
+
+    - name: install docker engine
+      become: yes
+      apt: >
+        name='{{item.name}}' state=present force=yes
+        dpkg_options='{{item.options|default(omit)}}'
+      with_items:
+        - { name: apparmor }
+        - { name: 'docker-engine={{docker_version}}',
+            options: force-confnew }
+      notify: reload docker
+
+    - name: add vagrant to docker group
+      become: yes
+      user: name=vagrant groups=docker append=yes
+
+    - name: install build packages for ansible
+      become: yes
+      apt: name='{{item}}' state=present update_cache=yes
+      with_items:
+        - build-essential
+        - openssh-client
+        - git
+        - libssl-dev
+        - libffi-dev
+        - python-dev
+        - python-keyczar
+        - python-setuptools
+        - python-pkg-resources
+
+    - name: easy_install pip
+      become: yes
+      easy_install: name=pip state=present
+
+    - name: pip install python packages for ansible
+      become: yes
+      pip: name='{{item.name}}' version='{{item.version|default(omit)}}'
+      with_items:
+        - { name: paramiko, version: 1.16.0 }
+        - { name: PyYAML }
+        - { name: Jinja2 }
+        - { name: httplib2 }
+        - { name: six }
+
+    - name: git clone ansible-2.1
+      git: >
+        repo=https://github.com/ansible/ansible recursive=yes force=yes
+        version='{{ansible_branch}}' dest='{{ansible_build_dir}}'
+
+    - name: build ansible
+      command: python setup.py build chdir='{{ansible_build_dir}}'
+
+    - name: install ansible
+      become: yes
+      command: python setup.py install chdir='{{ansible_build_dir}}'
+
+    - name: cleanup ansible build directory
+      become: yes
+      file: path='{{ansible_build_dir}}' state=absent
+
+  handlers:
+    - name: reload docker
+      become: yes
+      service: name=docker state=restarted

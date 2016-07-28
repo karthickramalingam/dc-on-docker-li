@@ -1,0 +1,106 @@
+version: '2'
+services:
+  build_switch:
+    build: .
+    image: openswitch/local_build
+    command: /bin/true
+  build_server:
+    build: ./server
+    image: server/local_build
+    command: /bin/true
+  fab1:
+    image: openswitch/local_build
+    container_name: "fab1"
+    privileged: true
+    ports:
+      - "10022:22"
+      - "10443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine1:
+    image: openswitch/local_build
+    container_name: "spine1"
+    privileged: true
+    ports:
+      - "11022:22"
+      - "11443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  spine2:
+    image: openswitch/local_build
+    container_name: "spine2"
+    privileged: true
+    ports:
+      - "12022:22"
+      - "12443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  server1:
+    image: server/local_build
+    container_name: "server1"
+    privileged: true
+    ports:
+      - "20122:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server2:
+    image: server/local_build
+    container_name: "server2"
+    privileged: true
+    ports:
+      - "20222:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server11:
+    image: server/local_build
+    container_name: "server11"
+    privileged: true
+    ports:
+      - "21122:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server12:
+    image: server/local_build
+    container_name: "server12"
+    privileged: true
+    ports:
+      - "21222:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server21:
+    image: server/local_build
+    container_name: "server21"
+    privileged: true
+    ports:
+      - "22122:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  server22:
+    image: server/local_build
+    container_name: "server22"
+    privileged: true
+    ports:
+      - "22222:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D

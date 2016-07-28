@@ -1,0 +1,9 @@
+---
+- name: copy ssh public key to the switch
+  hosts: switches
+  gather_facts: no
+  vars:
+    ssh_public_key: ~/.ssh/id_rsa.pub
+    ansible_user: root
+  tasks:
+    - authorized_key: user=admin key="{{ lookup('file', ssh_public_key) }}"
