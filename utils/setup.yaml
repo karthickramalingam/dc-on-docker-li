@@ -8,7 +8,9 @@
     - name: copy files needed to create OpenSwitch docker instance
       copy: src={{ item.src }} dest=~/{{ item.dst }}
       with_items:
-        - { src: "{{ docker_compose_file }}", dst: docker-compose.yaml }
+        - { src: "{{ docker_compose_file_fab }}", dst: docker-compose-fab.yaml }
+        - { src: "{{ docker_compose_file_csw }}", dst: docker-compose-csw.yaml }
+        - { src: "{{ docker_compose_file_asw }}", dst: docker-compose-asw.yaml }
         - { src: Dockerfile, dst: Dockerfile }
         - { src: "~/.ssh/{{ your_public_key}}", dst: "{{ your_public_key }}" }
         - { src: ops-if-netns.sh, dst: ops-if-netns.sh }
@@ -24,8 +26,18 @@
     - name: build switch and server docker image through utils/*/Dockerfile
       become: yes
       command: docker-compose build
-    - name: run all the containers
-      command: docker-compose up -d
+    - name: run fab and host containers
+      command: docker-compose -f docker-compose-fab.yaml up -d
+    - name: wait for 10 sec
+      pause: seconds=10
+    - name: run csw containers
+      command: docker-compose -f docker-compose-csw.yaml up -d
+    - name: wait for 10 sec
+      pause: seconds=10
+    - name: run asw containers
+      command: docker-compose -f docker-compose-asw.yaml up -d
+    - name: wait for 10 sec
+      pause: seconds=10
     - name: setup network by utils/docker-network.sh
       sudo: yes
       script: >

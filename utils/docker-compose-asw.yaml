@@ -1,0 +1,58 @@
+version: '2'
+services:
+  asw01:
+    image: openswitch/local_build
+    container_name: "asw01"
+    privileged: true
+    ports:
+      - "31022:22"
+      - "31443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  asw02:
+    image: openswitch/local_build
+    container_name: "asw02"
+    privileged: true
+    ports:
+      - "32022:22"
+      - "32443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  asw03:
+    image: openswitch/local_build
+    container_name: "asw03"
+    privileged: true
+    ports:
+      - "33022:22"
+      - "33443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  asw04:
+    image: openswitch/local_build
+    container_name: "asw04"
+    privileged: true
+    ports:
+      - "34022:22"
+      - "34443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init

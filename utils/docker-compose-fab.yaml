@@ -1,0 +1,76 @@
+version: '2'
+services:
+  fab05:
+    image: openswitch/local_build
+    container_name: "fab05"
+    privileged: true
+    ports:
+      - "11022:22"
+      - "11443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab06:
+    image: openswitch/local_build
+    container_name: "fab06"
+    privileged: true
+    ports:
+      - "12022:22"
+      - "12443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab07:
+    image: openswitch/local_build
+    container_name: "fab07"
+    privileged: true
+    ports:
+      - "13022:22"
+      - "13443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  fab08:
+    image: openswitch/local_build
+    container_name: "fab08"
+    privileged: true
+    ports:
+      - "14022:22"
+      - "14443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  host1:
+    image: server/local_build
+    container_name: "host1"
+    privileged: true
+    ports:
+      - "41022:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D
+  host2:
+    image: server/local_build
+    container_name: "host2"
+    privileged: true
+    ports:
+      - "42022:22"
+    networks:
+      - default
+    command: /usr/sbin/sshd -D

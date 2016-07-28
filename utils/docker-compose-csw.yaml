@@ -1,0 +1,114 @@
+version: '2'
+services:
+  csw01:
+    image: openswitch/local_build
+    container_name: "csw01"
+    privileged: true
+    ports:
+      - "21022:22"
+      - "21443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw02:
+    image: openswitch/local_build
+    container_name: "csw02"
+    privileged: true
+    ports:
+      - "22022:22"
+      - "22443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw03:
+    image: openswitch/local_build
+    container_name: "csw03"
+    privileged: true
+    ports:
+      - "23022:22"
+      - "23443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw04:
+    image: openswitch/local_build
+    container_name: "csw04"
+    privileged: true
+    ports:
+      - "24022:22"
+      - "24443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw05:
+    image: openswitch/local_build
+    container_name: "csw05"
+    privileged: true
+    ports:
+      - "25022:22"
+      - "25443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw06:
+    image: openswitch/local_build
+    container_name: "csw06"
+    privileged: true
+    ports:
+      - "26022:22"
+      - "26443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw07:
+    image: openswitch/local_build
+    container_name: "csw07"
+    privileged: true
+    ports:
+      - "27022:22"
+      - "27443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init
+  csw08:
+    image: openswitch/local_build
+    container_name: "csw08"
+    privileged: true
+    ports:
+      - "28022:22"
+      - "28443:443"
+    volumes:
+      - /tmp:/tmp
+      - /dev/log:/dev/log
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    networks:
+      - default
+    command: /sbin/init

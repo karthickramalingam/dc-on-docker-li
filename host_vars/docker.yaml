@@ -4,11 +4,12 @@
 your_public_key: id_rsa.pub
 
 # Docker compose file for DC topology.
-docker_compose_file: docker-compose.yaml
+docker_compose_file_fab: docker-compose-fab.yaml
+docker_compose_file_csw: docker-compose-csw.yaml
+docker_compose_file_asw: docker-compose-asw.yaml
 
 # Docker network shell script for DC topology.
 docker_network_script: docker-network.sh
-docker_network_script_host: docker-network-host.sh
 
 # Docker server file for server images
 docker_server_file: server/Dockerfile
