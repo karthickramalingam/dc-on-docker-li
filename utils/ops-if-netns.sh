@@ -1,6 +1,7 @@
 #! /bin/bash
 
 count=0
+systemctl stop restd
 
 for i in {1..48}; do
 	ip link set eth${i} > /dev/null
