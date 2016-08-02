@@ -2,7 +2,7 @@
 
 count=0
 systemctl stop restd
-
+systemctl stop ops-ntpd.service
 for i in {1..48}; do
 	ip link set eth${i} > /dev/null
 	if [ $? = 0 ]; then
