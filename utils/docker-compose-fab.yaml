@@ -4,6 +4,10 @@ services:
     build: .
     image: openswitch/local_build
     command: /bin/true
+  build_server:
+    build: ./server
+    image: server/local_build
+    command: /bin/true
   fab05:
     image: openswitch/local_build
     container_name: "fab05"
