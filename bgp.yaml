@@ -32,8 +32,8 @@
   tasks:
     - include: tasks/cli/check_running_config.yaml
       tags: [ bgp, check, cli ]
-    - include: tasks/rest/check_full_config.yaml
-      tags: [ bgp, check, rest ]
+#    - include: tasks/rest/check_full_config.yaml
+#      tags: [ bgp, check, rest ]
 
 - name: wait for BGP peering up
   hosts: switches
